@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35219.272
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicio.PersonaCliente.WebAPI", "Microservicio.PersonaCliente.WebAPI\Microservicio.PersonaCliente.WebAPI.csproj", "{29101FA2-6858-435A-BE5A-CCCAE18B8443}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservicio.PersonaCliente.API", "Microservicio.PersonaCliente.API\Microservicio.PersonaCliente.API.csproj", "{29101FA2-6858-435A-BE5A-CCCAE18B8443}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicio.PersonaCliente.Aplicacion", "Microservicio.PersonaCliente.Aplicacion\Microservicio.PersonaCliente.Aplicacion.csproj", "{B013A81A-EDB5-4D98-A4B6-443C35099039}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicio.PersonaCliente.Dominio", "Microservicio.PersonaCliente.Dominio\Microservicio.PersonaCliente.Dominio.csproj", "{6157F741-3912-4556-90A3-B67C4094C696}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicio.PersonaCliente.Infraestructura", "Microservicio.PersonaCliente.Infraestructura\Microservicio.PersonaCliente.Infraestructura.csproj", "{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{29101FA2-6858-435A-BE5A-CCCAE18B8443}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29101FA2-6858-435A-BE5A-CCCAE18B8443}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29101FA2-6858-435A-BE5A-CCCAE18B8443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B013A81A-EDB5-4D98-A4B6-443C35099039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B013A81A-EDB5-4D98-A4B6-443C35099039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B013A81A-EDB5-4D98-A4B6-443C35099039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B013A81A-EDB5-4D98-A4B6-443C35099039}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6157F741-3912-4556-90A3-B67C4094C696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6157F741-3912-4556-90A3-B67C4094C696}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6157F741-3912-4556-90A3-B67C4094C696}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6157F741-3912-4556-90A3-B67C4094C696}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

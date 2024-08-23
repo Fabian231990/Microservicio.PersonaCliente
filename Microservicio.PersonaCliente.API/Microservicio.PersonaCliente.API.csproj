@@ -13,4 +13,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Microservicio.PersonaCliente.Aplicacion\Microservicio.PersonaCliente.Aplicacion.csproj" />
+    <ProjectReference Include="..\Microservicio.PersonaCliente.Dominio\Microservicio.PersonaCliente.Dominio.csproj" />
+  </ItemGroup>
+
 </Project>
