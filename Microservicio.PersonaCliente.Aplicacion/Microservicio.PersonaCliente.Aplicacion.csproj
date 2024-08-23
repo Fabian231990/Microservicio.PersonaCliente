@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microservicio.PersonaCliente.Dominio\Microservicio.PersonaCliente.Dominio.csproj" />
+    <ProjectReference Include="..\Microservicio.PersonaCliente.Infraestructura\Microservicio.PersonaCliente.Infraestructura.csproj" />
   </ItemGroup>
 
 </Project>

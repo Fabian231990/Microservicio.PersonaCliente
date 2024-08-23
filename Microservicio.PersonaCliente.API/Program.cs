@@ -1,25 +1,33 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microservicio.PersonaCliente.Aplicacion.Interfaces;
+using Microservicio.PersonaCliente.Aplicacion.Servicios;
+using Microservicio.PersonaCliente.Infraestructura.Interfaces;
+using Microservicio.PersonaCliente.Infraestructura.Persistencia;
+using Microservicio.PersonaCliente.Infraestructura.Repositorios;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
+WebApplicationBuilder constructor = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+constructor.Services.AddControllers();
+constructor.Services.AddEndpointsApiExplorer();
+constructor.Services.AddSwaggerGen();
 
-var app = builder.Build();
+constructor.Services.AddScoped<IPersonaRepositorio, PersonaRepositorio>();
+constructor.Services.AddScoped<IPersonaServicio, PersonaServicio>();
+
+constructor.Services.AddDbContext<EjercicioTecnicoDBContext>(options =>
+    options.UseSqlServer(constructor.Configuration.GetConnectionString("Conexion")));
+
+
+WebApplication aplicacion = constructor.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (aplicacion.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    aplicacion.UseSwagger();
+    aplicacion.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+aplicacion.UseHttpsRedirection();
+aplicacion.UseAuthorization();
+aplicacion.MapControllers();
+aplicacion.Run();
