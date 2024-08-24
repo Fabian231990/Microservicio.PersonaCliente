@@ -11,7 +11,7 @@ namespace Microservicio.PersonaCliente.API.Controllers
     /// <param name="iClienteServicio">Servicio que maneja la lógica de negocio para Cliente.</param>
     [ApiController]
     [Route("[controller]")]
-    public class ClienteController(IClienteServicio iClienteServicio) : ControllerBase
+    public class ClientesController(IClienteServicio iClienteServicio) : ControllerBase
     {
         private readonly IClienteServicio iClienteServicio = iClienteServicio;
 

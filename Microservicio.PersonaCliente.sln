@@ -5,11 +5,13 @@ VisualStudioVersion = 17.11.35219.272
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservicio.PersonaCliente.API", "Microservicio.PersonaCliente.API\Microservicio.PersonaCliente.API.csproj", "{29101FA2-6858-435A-BE5A-CCCAE18B8443}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicio.PersonaCliente.Aplicacion", "Microservicio.PersonaCliente.Aplicacion\Microservicio.PersonaCliente.Aplicacion.csproj", "{B013A81A-EDB5-4D98-A4B6-443C35099039}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservicio.PersonaCliente.Aplicacion", "Microservicio.PersonaCliente.Aplicacion\Microservicio.PersonaCliente.Aplicacion.csproj", "{B013A81A-EDB5-4D98-A4B6-443C35099039}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicio.PersonaCliente.Dominio", "Microservicio.PersonaCliente.Dominio\Microservicio.PersonaCliente.Dominio.csproj", "{6157F741-3912-4556-90A3-B67C4094C696}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservicio.PersonaCliente.Dominio", "Microservicio.PersonaCliente.Dominio\Microservicio.PersonaCliente.Dominio.csproj", "{6157F741-3912-4556-90A3-B67C4094C696}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicio.PersonaCliente.Infraestructura", "Microservicio.PersonaCliente.Infraestructura\Microservicio.PersonaCliente.Infraestructura.csproj", "{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservicio.PersonaCliente.Infraestructura", "Microservicio.PersonaCliente.Infraestructura\Microservicio.PersonaCliente.Infraestructura.csproj", "{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicio.PersonaCliente.Tests", "Microservicio.PersonaCliente.Tests\Microservicio.PersonaCliente.Tests.csproj", "{DB525D73-A11C-4226-A58C-7AC1343974DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A8259CA-E2AC-4B43-9F62-2AFE1AEB59AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB525D73-A11C-4226-A58C-7AC1343974DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB525D73-A11C-4226-A58C-7AC1343974DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB525D73-A11C-4226-A58C-7AC1343974DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB525D73-A11C-4226-A58C-7AC1343974DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
