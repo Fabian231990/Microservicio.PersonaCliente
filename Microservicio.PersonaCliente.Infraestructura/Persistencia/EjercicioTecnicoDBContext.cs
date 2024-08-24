@@ -3,10 +3,12 @@ using Microservicio.PersonaCliente.Dominio.Entidades;
 
 namespace Microservicio.PersonaCliente.Infraestructura.Persistencia
 {
-    public class EjercicioTecnicoDBContext : DbContext
+    public class EjercicioTecnicoDBContext(DbContextOptions<EjercicioTecnicoDBContext> options) : DbContext(options)
     {
-        public EjercicioTecnicoDBContext(DbContextOptions<EjercicioTecnicoDBContext> options) : base(options) { }
-
+        // DbSet para Persona
         public DbSet<PersonaEntidad> Persona { get; set; }
+
+        // DbSet para Cliente
+        public DbSet<ClienteEntidad> Cliente { get; set; }
     }
 }

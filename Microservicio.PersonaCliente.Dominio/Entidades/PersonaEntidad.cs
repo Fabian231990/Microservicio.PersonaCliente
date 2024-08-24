@@ -10,7 +10,7 @@ namespace Microservicio.PersonaCliente.Dominio.Entidades
         /// <summary>
         /// Identificador unico de la Persona
         /// </summary>
-        [Key] 
+        [Key]
         public int IdPersona { get; set; }
 
         /// <summary>

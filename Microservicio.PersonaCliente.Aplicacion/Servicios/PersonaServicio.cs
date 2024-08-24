@@ -7,29 +7,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 {
-    public class PersonaServicio : IPersonaServicio
+    /// <summary>
+    /// Contructor de la Clase
+    /// </summary>
+    /// <param name="personaRepositorio">Interfaz del Repositorio de Persona</param>
+    public class PersonaServicio(IPersonaRepositorio iPersonaRepositorio) : IPersonaServicio
     {
         /// <summary>
         /// Interfaz del Repositorio de Persona
         /// </summary>
-        private readonly IPersonaRepositorio iPersonaRepositorio;
-
-        /// <summary>
-        /// Contructor de la Clase
-        /// </summary>
-        /// <param name="personaRepositorio">Interfaz del Repositorio de Persona</param>
-        public PersonaServicio(IPersonaRepositorio iPersonaRepositorio)
-        {
-            this.iPersonaRepositorio = iPersonaRepositorio;
-        }
+        private readonly IPersonaRepositorio iPersonaRepositorio = iPersonaRepositorio;
 
         /// <summary>
         /// Obtener toda la lista de Personas
         /// </summary>
         /// <returns>Listado con todas las personas registradas</returns>
-        public async Task<Respuesta<IEnumerable<PersonaEntidad>>> ObtenerPersonas()
+        public async Task<Respuesta<IEnumerable<PersonaEntidad>>> ObtenerPersonasAsync()
         {
-            var personas = await iPersonaRepositorio.ObtenerTodas();
+            IEnumerable<PersonaEntidad> personas = await iPersonaRepositorio.ObtenerTodasAsync();
             return Respuesta<IEnumerable<PersonaEntidad>>.CrearRespuestaExitosa(personas);
         }
 
@@ -38,9 +33,9 @@ namespace Microservicio.PersonaCliente.Aplicacion.Servicios
         /// </summary>
         /// <param name="identificacion">Identificacion de la Persona</param>
         /// <returns>Informacion de la Persona consultada</returns>
-        public async Task<Respuesta<PersonaEntidad>> ObtenerPersona(string identificacion)
+        public async Task<Respuesta<PersonaEntidad>> ObtenerPersonaAsync(string identificacion)
         {
-            var persona = await iPersonaRepositorio.ObtenerPorIdentificacion(identificacion);
+            PersonaEntidad persona = await iPersonaRepositorio.ObtenerPorIdentificacionAsync(identificacion);
             if (persona == null)
             {
                 return Respuesta<PersonaEntidad>.CrearRespuestaFallida(404, "La persona no fue encontrada.");
@@ -53,14 +48,14 @@ namespace Microservicio.PersonaCliente.Aplicacion.Servicios
         /// Crear una persona nueva
         /// </summary>
         /// <param name="personaEntidad">Entidad Persona</param>
-        public async Task<Respuesta<PersonaEntidad>> CrearPersona(PersonaEntidad personaEntidad)
+        public async Task<Respuesta<PersonaEntidad>> CrearPersonaAsync(PersonaEntidad personaEntidad)
         {
             if (personaEntidad == null || string.IsNullOrEmpty(personaEntidad.Identificacion) || string.IsNullOrEmpty(personaEntidad.Nombre))
             {
                 return Respuesta<PersonaEntidad>.CrearRespuestaFallida(400, "Los campos 'Identificación' y 'Nombre' son obligatorios.");
             }
 
-            var personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacion(personaEntidad.Identificacion);
+            PersonaEntidad personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacionAsync(personaEntidad.Identificacion);
             if (personaExistente != null)
             {
                 return Respuesta<PersonaEntidad>.CrearRespuestaFallida(409, "La identificación ya existe en la base de datos.");
@@ -68,7 +63,7 @@ namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 
             try
             {
-                await iPersonaRepositorio.Nuevo(personaEntidad);
+                await iPersonaRepositorio.NuevoAsync(personaEntidad);
                 return Respuesta<PersonaEntidad>.CrearRespuestaExitosa(personaEntidad);
             }
             catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2627)
@@ -86,14 +81,14 @@ namespace Microservicio.PersonaCliente.Aplicacion.Servicios
         /// </summary>
         /// <param name="identificacion">Identificacion de la Persona</param>
         /// <param name="personaEntidad">Entidad Persona</param>
-        public async Task<Respuesta<PersonaEntidad>> ActualizarPersona(string identificacion, PersonaEntidad personaEntidad)
+        public async Task<Respuesta<PersonaEntidad>> ActualizarPersonaAsync(string identificacion, PersonaEntidad personaEntidad)
         {
             if (!identificacion.Equals(personaEntidad.Identificacion))
             {
                 return Respuesta<PersonaEntidad>.CrearRespuestaFallida(400, "La identificación proporcionada no coincide con la de la entidad.");
             }
 
-            var personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacion(identificacion);
+            PersonaEntidad personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacionAsync(identificacion);
             if (personaExistente == null)
             {
                 return Respuesta<PersonaEntidad>.CrearRespuestaFallida(404, "La persona no fue encontrada.");
@@ -101,7 +96,7 @@ namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 
             try
             {
-                await iPersonaRepositorio.Modificar(personaEntidad);
+                await iPersonaRepositorio.ModificarAsync(personaEntidad);
                 return Respuesta<PersonaEntidad>.CrearRespuestaExitosa(personaEntidad);
             }
             catch (DbUpdateConcurrencyException)
@@ -118,14 +113,14 @@ namespace Microservicio.PersonaCliente.Aplicacion.Servicios
         /// Eliminar una persona por la identificacion
         /// </summary>
         /// <param name="identificacion">Identificacion de la Persona</param>
-        public async Task<Respuesta<string>> EliminarPersona(string identificacion)
+        public async Task<Respuesta<string>> EliminarPersonaAsync(string identificacion)
         {
             if (string.IsNullOrEmpty(identificacion))
             {
                 return Respuesta<string>.CrearRespuestaFallida(400, "La identificación no puede estar vacía.");
             }
 
-            var personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacion(identificacion);
+            PersonaEntidad personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacionAsync(identificacion);
             if (personaExistente == null)
             {
                 return Respuesta<string>.CrearRespuestaFallida(404, $"No se encontró ninguna persona con la identificación {identificacion}.");
@@ -133,7 +128,7 @@ namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 
             try
             {
-                await iPersonaRepositorio.Eliminar(identificacion);
+                await iPersonaRepositorio.EliminarAsync(identificacion);
                 return Respuesta<string>.CrearRespuestaExitosa($"La persona con identificación {identificacion} ha sido eliminada.");
             }
             catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 547)
@@ -146,5 +141,4 @@ namespace Microservicio.PersonaCliente.Aplicacion.Servicios
             }
         }
     }
-
 }

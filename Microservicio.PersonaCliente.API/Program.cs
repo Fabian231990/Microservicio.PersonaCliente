@@ -13,14 +13,14 @@ constructor.Services.AddSwaggerGen();
 
 constructor.Services.AddScoped<IPersonaRepositorio, PersonaRepositorio>();
 constructor.Services.AddScoped<IPersonaServicio, PersonaServicio>();
+constructor.Services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
+constructor.Services.AddScoped<IClienteServicio, ClienteServicio>();
 
 constructor.Services.AddDbContext<EjercicioTecnicoDBContext>(options =>
     options.UseSqlServer(constructor.Configuration.GetConnectionString("Conexion")));
 
-
 WebApplication aplicacion = constructor.Build();
 
-// Configure the HTTP request pipeline.
 if (aplicacion.Environment.IsDevelopment())
 {
     aplicacion.UseSwagger();

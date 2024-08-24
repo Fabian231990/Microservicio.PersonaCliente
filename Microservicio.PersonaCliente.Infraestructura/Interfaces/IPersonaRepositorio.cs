@@ -11,31 +11,31 @@ namespace Microservicio.PersonaCliente.Infraestructura.Interfaces
         /// Obtener toda la lista de Personas
         /// </summary>
         /// <returns>Listado con todas las personas registradas</returns>
-        Task<IEnumerable<PersonaEntidad>> ObtenerTodas();
+        Task<IEnumerable<PersonaEntidad>> ObtenerTodasAsync();
 
         /// <summary>
         /// Obtener la Persona por la Identificacion
         /// </summary>
         /// <param name="identificacion">Identificacion de la Persona</param>
         /// <returns>Informacion de la Persona consultada</returns>
-        Task<PersonaEntidad> ObtenerPorIdentificacion(string identificacion);
+        Task<PersonaEntidad> ObtenerPorIdentificacionAsync(string identificacion);
 
         /// <summary>
         /// Crear una persona nueva
         /// </summary>
         /// <param name="personaEntidad">Entidad Persona</param>
-        Task Nuevo(PersonaEntidad personaEntidad);
+        Task NuevoAsync(PersonaEntidad personaEntidad);
 
         /// <summary>
         /// Actualizar los datos de una persona
         /// </summary>
         /// <param name="personaEntidad">Entidad Persona</param>
-        Task Modificar(PersonaEntidad personaEntidad);
+        Task ModificarAsync(PersonaEntidad personaEntidad);
 
         /// <summary>
         /// Eliminar una persona por la identificacion
         /// </summary>
         /// <param name="identificacion">Identificacion de la Persona</param>
-        Task Eliminar(string identificacion);
+        Task EliminarAsync(string identificacion);
     }
 }

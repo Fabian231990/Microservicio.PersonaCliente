@@ -5,23 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Microservicio.PersonaCliente.API.Controllers
 {
+    /// <summary>
+    /// Controlador que maneja las operaciones CRUD para la entidad Persona.
+    /// </summary>
+    /// <param name="iPersonaServicio">Servicio que maneja la lógica de negocio para Persona.</param>
     [ApiController]
     [Route("[controller]")]
-    public class PersonaController : ControllerBase
+    public class PersonaController(IPersonaServicio iPersonaServicio) : ControllerBase
     {
         /// <summary>
-        /// Interfaz del Servicio de Persona
+        /// Servicio que maneja la lógica de negocio para Persona.
         /// </summary>
-        private readonly IPersonaServicio iPersonaServicio;
-
-        /// <summary>
-        /// Controlador de la Clase
-        /// </summary>
-        /// <param name="iPersonaServicio">Interfaz del Servicio de Persona</param>
-        public PersonaController(IPersonaServicio iPersonaServicio)
-        {
-            this.iPersonaServicio = iPersonaServicio;
-        }
+        private readonly IPersonaServicio iPersonaServicio = iPersonaServicio;
 
         /// <summary>
         /// Obtener toda la lista de Personas
@@ -30,7 +25,7 @@ namespace Microservicio.PersonaCliente.API.Controllers
         [HttpGet]
         public async Task<ActionResult<Respuesta<IEnumerable<PersonaEntidad>>>> ObtenerPersonas()
         {
-            var resultado = await iPersonaServicio.ObtenerPersonas();
+            Respuesta<IEnumerable<PersonaEntidad>> resultado = await iPersonaServicio.ObtenerPersonasAsync();
             return Ok(resultado);
         }
 
@@ -42,7 +37,7 @@ namespace Microservicio.PersonaCliente.API.Controllers
         [HttpGet("{identificacion}")]
         public async Task<ActionResult<Respuesta<PersonaEntidad>>> ObtenerPersona(string identificacion)
         {
-            var resultado = await iPersonaServicio.ObtenerPersona(identificacion);
+            Respuesta<PersonaEntidad> resultado = await iPersonaServicio.ObtenerPersonaAsync(identificacion);
             if (!resultado.EsExitoso)
             {
                 return StatusCode(resultado.Codigo, resultado);
@@ -58,7 +53,7 @@ namespace Microservicio.PersonaCliente.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Respuesta<PersonaEntidad>>> CrearPersona(PersonaEntidad personaEntidad)
         {
-            var resultado = await iPersonaServicio.CrearPersona(personaEntidad);
+            Respuesta<PersonaEntidad> resultado = await iPersonaServicio.CrearPersonaAsync(personaEntidad);
             if (!resultado.EsExitoso)
             {
                 return StatusCode(resultado.Codigo, resultado);
@@ -75,7 +70,7 @@ namespace Microservicio.PersonaCliente.API.Controllers
         [HttpPut("{identificacion}")]
         public async Task<ActionResult<Respuesta<PersonaEntidad>>> ActualizarPersona(string identificacion, PersonaEntidad personaEntidad)
         {
-            var resultado = await iPersonaServicio.ActualizarPersona(identificacion, personaEntidad);
+            Respuesta<PersonaEntidad> resultado = await iPersonaServicio.ActualizarPersonaAsync(identificacion, personaEntidad);
             if (!resultado.EsExitoso)
             {
                 return StatusCode(resultado.Codigo, resultado);
@@ -91,7 +86,7 @@ namespace Microservicio.PersonaCliente.API.Controllers
         [HttpDelete("{identificacion}")]
         public async Task<ActionResult<Respuesta<string>>> EliminarPersona(string identificacion)
         {
-            var resultado = await iPersonaServicio.EliminarPersona(identificacion);
+            Respuesta<string> resultado = await iPersonaServicio.EliminarPersonaAsync(identificacion);
             if (!resultado.EsExitoso)
             {
                 return StatusCode(resultado.Codigo, resultado);
