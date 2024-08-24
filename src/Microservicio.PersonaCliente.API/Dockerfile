@@ -14,19 +14,22 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-1809 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Microservicio.PersonaCliente/Microservicio.PersonaCliente.csproj", "Microservicio.PersonaCliente/"]
-RUN dotnet restore "./Microservicio.PersonaCliente/Microservicio.PersonaCliente.csproj"
+COPY ["src/Microservicio.PersonaCliente.API/Microservicio.PersonaCliente.API.csproj", "src/Microservicio.PersonaCliente.API/"]
+COPY ["src/Microservicio.PersonaCliente.Aplicacion/Microservicio.PersonaCliente.Aplicacion.csproj", "src/Microservicio.PersonaCliente.Aplicacion/"]
+COPY ["src/Microservicio.PersonaCliente.Dominio/Microservicio.PersonaCliente.Dominio.csproj", "src/Microservicio.PersonaCliente.Dominio/"]
+COPY ["src/Microservicio.PersonaCliente.Infraestructura/Microservicio.PersonaCliente.Infraestructura.csproj", "src/Microservicio.PersonaCliente.Infraestructura/"]
+RUN dotnet restore "./src/Microservicio.PersonaCliente.API/Microservicio.PersonaCliente.API.csproj"
 COPY . .
-WORKDIR "/src/Microservicio.PersonaCliente"
-RUN dotnet build "./Microservicio.PersonaCliente.csproj" -c %BUILD_CONFIGURATION% -o /app/build
+WORKDIR "/src/src/Microservicio.PersonaCliente.API"
+RUN dotnet build "./Microservicio.PersonaCliente.API.csproj" -c %BUILD_CONFIGURATION% -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Microservicio.PersonaCliente.csproj" -c %BUILD_CONFIGURATION% -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Microservicio.PersonaCliente.API.csproj" -c %BUILD_CONFIGURATION% -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Microservicio.PersonaCliente.dll"]
+ENTRYPOINT ["dotnet", "Microservicio.PersonaCliente.API.dll"]

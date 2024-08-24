@@ -25,9 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microservicio.PersonaCliente.Aplicacion\Microservicio.PersonaCliente.Aplicacion.csproj" />
-    <ProjectReference Include="..\Microservicio.PersonaCliente.Dominio\Microservicio.PersonaCliente.Dominio.csproj" />
-    <ProjectReference Include="..\Microservicio.PersonaCliente.Infraestructura\Microservicio.PersonaCliente.Infraestructura.csproj" />
+    <ProjectReference Include="..\..\src\Microservicio.PersonaCliente.Aplicacion\Microservicio.PersonaCliente.Aplicacion.csproj" />
+    <ProjectReference Include="..\..\src\Microservicio.PersonaCliente.Dominio\Microservicio.PersonaCliente.Dominio.csproj" />
+    <ProjectReference Include="..\..\src\Microservicio.PersonaCliente.Infraestructura\Microservicio.PersonaCliente.Infraestructura.csproj" />
   </ItemGroup>
 
   <ItemGroup>
