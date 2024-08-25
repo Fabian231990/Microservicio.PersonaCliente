@@ -2,6 +2,9 @@
 
 namespace Microservicio.PersonaCliente.Tests.Test
 {
+    /// <summary>
+    /// Tests Persona Entidad
+    /// </summary>
     public class PersonaEntidadTests
     {
         [Fact]

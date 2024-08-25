@@ -2,6 +2,9 @@ using Microservicio.PersonaCliente.Dominio.Entidades;
 
 namespace Microservicio.PersonaCliente.Tests.Test
 {
+    /// <summary>
+    /// Tests Cliente Entidad
+    /// </summary>
     public class ClienteEntidadTests
     {
         [Fact]
@@ -40,6 +43,5 @@ namespace Microservicio.PersonaCliente.Tests.Test
                 Estado = true
             });
         }
-
     }
 }
