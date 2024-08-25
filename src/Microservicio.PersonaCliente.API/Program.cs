@@ -21,7 +21,7 @@ constructor.Services.AddDbContext<EjercicioTecnicoDBContext>(options =>
 
 WebApplication aplicacion = constructor.Build();
 
-if (aplicacion.Environment.IsDevelopment())
+if (aplicacion.Environment.IsDevelopment() || aplicacion.Environment.IsProduction())
 {
     aplicacion.UseSwagger();
     aplicacion.UseSwaggerUI();
