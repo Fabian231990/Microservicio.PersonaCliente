@@ -58,7 +58,8 @@ namespace Microservicio.PersonaCliente.Infraestructura.Repositorios
                 IdPersona = cliente.IdPersona,
                 Identificacion = cliente.Persona.Identificacion,
                 Contrasenia = cliente.Contrasenia,
-                Estado = cliente.Estado
+                Estado = cliente.Estado,
+                Nombre = cliente.Persona.Nombre
             };
         }
 

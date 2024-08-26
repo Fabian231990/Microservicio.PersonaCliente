@@ -29,5 +29,10 @@
         /// Estado del cliente. Indica si el cliente esta activo o inactivo.
         /// </summary>
         public bool Estado { get; set; }
+
+        /// <summary>
+        /// Nombre completo de la persona.
+        /// </summary>
+        public string Nombre { get; set; }
     }
 }

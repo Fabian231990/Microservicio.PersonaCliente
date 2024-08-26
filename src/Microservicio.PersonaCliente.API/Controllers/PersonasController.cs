@@ -13,7 +13,7 @@ namespace Microservicio.PersonaCliente.API.Controllers
     /// </remarks>
     /// <param name="personaServicio">Servicio de personas que maneja la logica de negocio.</param>
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class PersonasController(IPersonaServicio personaServicio) : ControllerBase
     {
         /// <summary>
