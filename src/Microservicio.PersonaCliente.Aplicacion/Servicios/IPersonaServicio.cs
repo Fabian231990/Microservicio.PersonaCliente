@@ -1,43 +1,46 @@
-﻿using Microservicio.PersonaCliente.Dominio.Entidades;
+﻿using Microservicio.PersonaCliente.Dominio.Dto;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
 
 namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 {
     /// <summary>
-    /// Interfaz persona servicio
+    /// Interfaz para el servicio de gestion de personas.
     /// </summary>
     public interface IPersonaServicio
     {
         /// <summary>
-        /// Obtener toda la lista de Personas
+        /// Obtiene toda la lista de personas en formato DTO.
         /// </summary>
-        /// <returns>Listado con todas las personas registradas</returns>
-        Task<Respuesta<IEnumerable<PersonaEntidad>>> ObtenerPersonasAsync();
+        /// <returns>Respuesta con la lista de personas.</returns>
+        Task<Respuesta<IEnumerable<PersonaDto>>> ObtenerTodasAsync();
 
         /// <summary>
-        /// Obtener la Persona por la Identificacion
+        /// Obtiene una persona por su identificacion en formato DTO.
         /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        /// <returns>Informacion de la Persona consultada</returns>
-        Task<Respuesta<PersonaEntidad>> ObtenerPersonaAsync(string identificacion);
+        /// <param name="identificacion">Identificacion de la persona.</param>
+        /// <returns>Respuesta con la persona encontrada.</returns>
+        Task<Respuesta<PersonaDto>> ObtenerPorIdentificacionAsync(string identificacion);
 
         /// <summary>
-        /// Crear una persona nueva
+        /// Crea una nueva persona.
         /// </summary>
-        /// <param name="personaEntidad">Entidad Persona</param>
-        Task<Respuesta<PersonaEntidad>> CrearPersonaAsync(PersonaEntidad personaEntidad);
+        /// <param name="personaDto">DTO de la persona a crear.</param>
+        /// <returns>Respuesta con la persona creada.</returns>
+        Task<Respuesta<PersonaDto>> CrearAsync(PersonaDto personaDto);
 
         /// <summary>
-        /// Actualizar los datos de una persona
+        /// Actualiza una persona existente.
         /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        /// <param name="personaEntidad">Entidad Persona</param>
-        Task<Respuesta<PersonaEntidad>> ActualizarPersonaAsync(string identificacion, PersonaEntidad personaEntidad);
+        /// <param name="identificacion">Identificacion de la persona a modificar.</param>
+        /// <param name="personaDto">DTO de la persona a actualizar.</param>
+        /// <returns>Respuesta con la persona actualizada.</returns>
+        Task<Respuesta<PersonaDto>> ModificarAsync(string identificacion, PersonaDto personaDto);
 
         /// <summary>
-        /// Eliminar una persona por la identificacion
+        /// Elimina una persona por su identificacion.
         /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        Task<Respuesta<string>> EliminarPersonaAsync(string identificacion);
+        /// <param name="identificacion">Identificacion de la persona a eliminar.</param>
+        /// <returns>Respuesta con el resultado de la eliminacion.</returns>
+        Task<Respuesta<string>> EliminarAsync(string identificacion);
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace Microservicio.PersonaCliente.Dominio.Entidades
+﻿namespace Microservicio.PersonaCliente.Dominio.Dto
 {
     /// <summary>
-    /// Representa la entidad Persona en el dominio, con informacion basica personal y asociacion a un cliente.
+    /// DTO para la entidad Persona.
     /// </summary>
-    public partial class PersonaEntidad
+    public class PersonaDto
     {
         /// <summary>
         /// Identificador unico de la persona.
@@ -39,10 +39,5 @@
         /// Numero de telefono de la persona.
         /// </summary>
         public string Telefono { get; set; }
-
-        /// <summary>
-        /// Navegacion hacia la entidad Cliente asociada con esta persona.
-        /// </summary>
-        public virtual ClienteEntidad Cliente { get; set; }
     }
 }

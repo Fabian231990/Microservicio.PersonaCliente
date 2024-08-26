@@ -1,98 +1,100 @@
 ﻿using Microservicio.PersonaCliente.Aplicacion.Servicios;
-using Microservicio.PersonaCliente.Dominio.Entidades;
+using Microservicio.PersonaCliente.Dominio.Dto;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Microservicio.PersonaCliente.API.Controllers
 {
     /// <summary>
-    /// Controlador que maneja las operaciones CRUD para la entidad Cliente.
+    /// Controlador para la gestion de clientes.
     /// </summary>
-    /// <param name="iClienteServicio">Servicio que maneja la lógica de negocio para Cliente.</param>
+    /// <remarks>
+    /// Constructor del controlador de clientes.
+    /// </remarks>
+    /// <param name="clienteServicio">Servicio para la gestion de clientes.</param>
     [ApiController]
     [Route("[controller]")]
-    public class ClientesController(IClienteServicio iClienteServicio) : ControllerBase
+    public class ClientesController(IClienteServicio clienteServicio) : ControllerBase
     {
-        private readonly IClienteServicio iClienteServicio = iClienteServicio;
+        /// <summary>
+        /// Servicio para la gestion de clientes.
+        /// </summary>
+        private readonly IClienteServicio _clienteServicio = clienteServicio;
 
         /// <summary>
-        /// Obtiene todos los clientes registrados.
+        /// Obtiene todos los clientes.
         /// </summary>
-        /// <returns>Una respuesta con una colección de clientes.</returns>
+        /// <returns>Respuesta con la lista de clientes.</returns>
         [HttpGet]
-        public async Task<ActionResult<Respuesta<IEnumerable<ClienteEntidad>>>> ObtenerClientes()
+        public async Task<ActionResult<Respuesta<IEnumerable<ClienteDto>>>> ObtenerClientes()
         {
-            Respuesta<IEnumerable<ClienteEntidad>> resultado = await iClienteServicio.ObtenerClientesAsync();
-            return Ok(resultado);
+            var respuesta = await _clienteServicio.ObtenerTodosAsync();
+            return Ok(respuesta);
         }
 
         /// <summary>
-        /// Obtiene un cliente específico por su ID.
+        /// Obtiene un cliente por la identificacion de la persona asociada.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a buscar.</param>
-        /// <returns>Una respuesta con los datos del cliente si se encuentra.</returns>
-        [HttpGet("{idCliente}")]
-        public async Task<ActionResult<Respuesta<ClienteEntidad>>> ObtenerClientePorId(int idCliente)
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <returns>Respuesta con el cliente encontrado.</returns>
+        [HttpGet("{identificacion}")]
+        public async Task<ActionResult<Respuesta<ClienteDto>>> ObtenerCliente(string identificacion)
         {
-            Respuesta<ClienteEntidad> resultado = await iClienteServicio.ObtenerClientePorIdAsync(idCliente);
-            if (!resultado.EsExitoso)
+            var respuesta = await _clienteServicio.ObtenerPorIdentificacionAsync(identificacion);
+            if (!respuesta.EsExitoso)
             {
-                return StatusCode(resultado.Codigo, resultado);
+                return NotFound(respuesta);
             }
-
-            return Ok(resultado);
+            return Ok(respuesta);
         }
 
         /// <summary>
         /// Crea un nuevo cliente.
         /// </summary>
-        /// <param name="clienteEntidad">El objeto ClienteEntidad que se va a crear.</param>
-        /// <returns>Una respuesta con el cliente creado.</returns>
+        /// <param name="clienteDto">DTO del cliente a crear.</param>
+        /// <returns>Respuesta con el cliente creado.</returns>
         [HttpPost]
-        public async Task<ActionResult<Respuesta<ClienteEntidad>>> CrearCliente(ClienteEntidad clienteEntidad)
+        public async Task<ActionResult<Respuesta<ClienteDto>>> CrearCliente(ClienteDto clienteDto)
         {
-            Respuesta<ClienteEntidad> resultado = await iClienteServicio.CrearClienteAsync(clienteEntidad);
-            if (!resultado.EsExitoso)
+            var respuesta = await _clienteServicio.CrearAsync(clienteDto);
+            if (!respuesta.EsExitoso)
             {
-                return StatusCode(resultado.Codigo, resultado);
+                return BadRequest(respuesta);
             }
-
-            return CreatedAtAction(nameof(ObtenerClientePorId), new { idCliente = clienteEntidad.IdCliente }, resultado);
+            return CreatedAtAction(nameof(ObtenerCliente), new { identificacion = clienteDto.Identificacion }, respuesta);
         }
 
         /// <summary>
-        /// Actualiza los datos de un cliente existente.
+        /// Modifica un cliente existente.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a actualizar.</param>
-        /// <param name="clienteEntidad">El objeto ClienteEntidad con los datos actualizados.</param>
-        /// <returns>Una respuesta con el cliente actualizado.</returns>
-        [HttpPut("{idCliente}")]
-        public async Task<ActionResult<Respuesta<ClienteEntidad>>> ActualizarCliente(int idCliente, ClienteEntidad clienteEntidad)
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <param name="clienteDto">DTO del cliente a modificar.</param>
+        /// <returns>Respuesta con el cliente modificado.</returns>
+        [HttpPut("{identificacion}")]
+        public async Task<IActionResult> ModificarCliente(string identificacion, ClienteDto clienteDto)
         {
-            Respuesta<ClienteEntidad> resultado = await iClienteServicio.ActualizarClienteAsync(idCliente, clienteEntidad);
-            if (!resultado.EsExitoso)
+            var respuesta = await _clienteServicio.ModificarAsync(identificacion, clienteDto);
+            if (!respuesta.EsExitoso)
             {
-                return StatusCode(resultado.Codigo, resultado);
+                return NotFound(respuesta);
             }
-
-            return Ok(resultado);
+            return Ok(respuesta);
         }
 
         /// <summary>
-        /// Elimina un cliente por su ID.
+        /// Elimina un cliente por su identificacion.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a eliminar.</param>
-        /// <returns>Una respuesta que indica el resultado de la operación.</returns>
-        [HttpDelete("{idCliente}")]
-        public async Task<ActionResult<Respuesta<string>>> EliminarCliente(int idCliente)
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <returns>Respuesta con el resultado de la eliminacion.</returns>
+        [HttpDelete("{identificacion}")]
+        public async Task<IActionResult> EliminarCliente(string identificacion)
         {
-            Respuesta<string> resultado = await iClienteServicio.EliminarClienteAsync(idCliente);
-            if (!resultado.EsExitoso)
+            var respuesta = await _clienteServicio.EliminarAsync(identificacion);
+            if (!respuesta.EsExitoso)
             {
-                return StatusCode(resultado.Codigo, resultado);
+                return NotFound(respuesta);
             }
-
-            return Ok(resultado);
+            return Ok(respuesta);
         }
     }
 }

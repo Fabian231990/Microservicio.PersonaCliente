@@ -1,125 +1,151 @@
-﻿using Microservicio.PersonaCliente.Dominio.Entidades;
+﻿using Microservicio.PersonaCliente.Dominio.Dto;
 using Microservicio.PersonaCliente.Infraestructura.Repositorios;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
 
 namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 {
     /// <summary>
-    /// Contructor de la Clase
+    /// Servicio para la gestion de clientes.
     /// </summary>
-    /// <param name="iClienteRepositorio">Interfaz del Repositorio de Cliente</param>
-    public class ClienteServicio(IClienteRepositorio iClienteRepositorio) : IClienteServicio
+    /// <remarks>
+    /// Inicializa una nueva instancia del servicio de clientes.
+    /// </remarks>
+    /// <param name="clienteRepositorio">Repositorio para la gestion de clientes.</param>
+    /// <param name="personaRepositorio">Repositorio para la gestion de personas.</param>
+    public class ClienteServicio(IClienteRepositorio clienteRepositorio, IPersonaRepositorio personaRepositorio) : IClienteServicio
     {
-        private readonly IClienteRepositorio iClienteRepositorio = iClienteRepositorio;
+        /// <summary>
+        /// Repositorio para la gestion de clientes
+        /// </summary>
+        private readonly IClienteRepositorio _clienteRepositorio = clienteRepositorio;
 
         /// <summary>
-        /// Obtiene todos los clientes registrados.
+        /// Repositorio para la gestion de personas.
         /// </summary>
-        /// <returns>Una respuesta con una colección enumerable de objetos ClienteEntidad.</returns>
-        public async Task<Respuesta<IEnumerable<ClienteEntidad>>> ObtenerClientesAsync()
+        private readonly IPersonaRepositorio _personaRepositorio = personaRepositorio;
+
+        /// <summary>
+        /// Obtiene toda la lista de clientes en formato DTO.
+        /// </summary>
+        /// <returns>Respuesta con la lista de clientes.</returns>
+        public async Task<Respuesta<IEnumerable<ClienteDto>>> ObtenerTodosAsync()
         {
-            IEnumerable<ClienteEntidad> clientes = await iClienteRepositorio.ObtenerTodosAsync();
-            return Respuesta<IEnumerable<ClienteEntidad>>.CrearRespuestaExitosa(clientes);
+            var clientes = await _clienteRepositorio.ObtenerTodosAsync();
+            if (!clientes.Any())
+            {
+                return Respuesta<IEnumerable<ClienteDto>>.CrearRespuestaFallida(404, "No se encontraron clientes registrados.");
+            }
+
+            return Respuesta<IEnumerable<ClienteDto>>.CrearRespuestaExitosa(clientes);
         }
 
         /// <summary>
-        /// Obtiene un cliente específico por su ID.
+        /// Obtiene un cliente por la identificacion de la persona asociada.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a buscar.</param>
-        /// <returns>Una respuesta con el objeto ClienteEntidad correspondiente al ID proporcionado.</returns>
-        public async Task<Respuesta<ClienteEntidad>> ObtenerClientePorIdAsync(int idCliente)
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <returns>Respuesta con el cliente encontrado.</returns>
+        public async Task<Respuesta<ClienteDto>> ObtenerPorIdentificacionAsync(string identificacion)
         {
-            ClienteEntidad cliente = await iClienteRepositorio.ObtenerPorIdAsync(idCliente);
-            if (cliente == null)
+            if (string.IsNullOrEmpty(identificacion))
             {
-                return Respuesta<ClienteEntidad>.CrearRespuestaFallida(404, "Cliente no encontrado.");
+                return Respuesta<ClienteDto>.CrearRespuestaFallida(400, "La identificacion es obligatoria.");
             }
 
-            return Respuesta<ClienteEntidad>.CrearRespuestaExitosa(cliente);
+            var cliente = await _clienteRepositorio.ObtenerPorIdentificacionAsync(identificacion);
+            if (cliente == null)
+            {
+                return Respuesta<ClienteDto>.CrearRespuestaFallida(404, "Cliente no encontrado.");
+            }
+
+            return Respuesta<ClienteDto>.CrearRespuestaExitosa(cliente);
         }
 
         /// <summary>
         /// Crea un nuevo cliente.
         /// </summary>
-        /// <param name="clienteEntidad">El objeto ClienteEntidad que se va a crear.</param>
-        /// <returns>Una respuesta con el objeto ClienteEntidad creado.</returns>
-        public async Task<Respuesta<ClienteEntidad>> CrearClienteAsync(ClienteEntidad clienteEntidad)
+        /// <param name="clienteDto">DTO del cliente a crear.</param>
+        /// <returns>Respuesta con el cliente creado.</returns>
+        public async Task<Respuesta<ClienteDto>> CrearAsync(ClienteDto clienteDto)
         {
-            if (clienteEntidad == null || clienteEntidad.IdPersona <= 0 || string.IsNullOrEmpty(clienteEntidad.Contrasenia))
+            // Validaciones iniciales
+            if (clienteDto == null || string.IsNullOrEmpty(clienteDto.Identificacion) || string.IsNullOrEmpty(clienteDto.Contrasenia))
             {
-                return Respuesta<ClienteEntidad>.CrearRespuestaFallida(400, "Datos del cliente inválidos.");
+                return Respuesta<ClienteDto>.CrearRespuestaFallida(400, "Datos del cliente invalidos.");
             }
 
-            // Verificar si ya existe un cliente con el mismo IdPersona
-            var clienteExistente = await iClienteRepositorio.ObtenerPorIdPersona(clienteEntidad.IdPersona);
+            // Verificar si la persona existe
+            var persona = await _personaRepositorio.ObtenerPorIdentificacionAsync(clienteDto.Identificacion);
+            if (persona == null)
+            {
+                return Respuesta<ClienteDto>.CrearRespuestaFallida(404, "Persona asociada no encontrada.");
+            }
+
+            // Verificar si ya existe un cliente para esta persona
+            var clienteExistente = await _clienteRepositorio.ObtenerPorIdentificacionAsync(clienteDto.Identificacion);
             if (clienteExistente != null)
             {
-                return Respuesta<ClienteEntidad>.CrearRespuestaFallida(409, "Ya existe un cliente asociado con esta persona.");
+                return Respuesta<ClienteDto>.CrearRespuestaFallida(409, "Ya existe un cliente asociado con esta persona.");
             }
 
-            try
-            {
-                await iClienteRepositorio.NuevoAsync(clienteEntidad);
-                return Respuesta<ClienteEntidad>.CrearRespuestaExitosa(clienteEntidad);
-            }
-            catch (Exception ex)
-            {
-                return Respuesta<ClienteEntidad>.CrearRespuestaFallida(500, $"Error al crear el cliente: {ex.Message}");
-            }
+            // Crear el cliente
+            ClienteDto clienteRespuestaDto = await _clienteRepositorio.NuevoAsync(clienteDto);
+            return Respuesta<ClienteDto>.CrearRespuestaExitosa(clienteRespuestaDto);
         }
 
         /// <summary>
-        /// Actualiza los datos de un cliente existente.
+        /// Modifica los datos de un cliente existente.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a actualizar.</param>
-        /// <param name="clienteEntidad">El objeto ClienteEntidad con los datos actualizados.</param>
-        /// <returns>Una respuesta con el objeto ClienteEntidad actualizado.</returns>
-        public async Task<Respuesta<ClienteEntidad>> ActualizarClienteAsync(int idCliente, ClienteEntidad clienteEntidad)
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <param name="clienteDto">DTO del cliente a modificar.</param>
+        /// <returns>Respuesta con el cliente modificado.</returns>
+        public async Task<Respuesta<ClienteDto>> ModificarAsync(string identificacion, ClienteDto clienteDto)
         {
-            if (idCliente != clienteEntidad.IdCliente)
+            // Validaciones iniciales
+            if (clienteDto == null || string.IsNullOrEmpty(clienteDto.Identificacion))
             {
-                return Respuesta<ClienteEntidad>.CrearRespuestaFallida(400, "El ID del cliente proporcionado no coincide.");
+                return Respuesta<ClienteDto>.CrearRespuestaFallida(400, "Datos del cliente invalidos.");
             }
 
-            ClienteEntidad clienteExistente = await iClienteRepositorio.ObtenerPorIdAsync(idCliente);
+            if (identificacion != clienteDto.Identificacion)
+            {
+                return Respuesta<ClienteDto>.CrearRespuestaFallida(400, "La identificacion proporcionada no coincide con la de la entidad.");
+            }
+
+            // Verificar si el cliente existe
+            var clienteExistente = await _clienteRepositorio.ObtenerPorIdentificacionAsync(clienteDto.Identificacion);
             if (clienteExistente == null)
             {
-                return Respuesta<ClienteEntidad>.CrearRespuestaFallida(404, "Cliente no encontrado.");
+                return Respuesta<ClienteDto>.CrearRespuestaFallida(404, "Cliente no encontrado.");
             }
 
-            try
-            {
-                await iClienteRepositorio.ModificarAsync(clienteEntidad);
-                return Respuesta<ClienteEntidad>.CrearRespuestaExitosa(clienteEntidad);
-            }
-            catch (Exception ex)
-            {
-                return Respuesta<ClienteEntidad>.CrearRespuestaFallida(500, $"Error al actualizar el cliente: {ex.Message}");
-            }
+            // Modificar el cliente
+            ClienteDto clienteRespuestaDto = await _clienteRepositorio.ModificarAsync(clienteDto);
+            return Respuesta<ClienteDto>.CrearRespuestaExitosa(clienteRespuestaDto);
         }
 
         /// <summary>
-        /// Elimina un cliente por su ID.
+        /// Elimina un cliente por su identificacion.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a eliminar.</param>
-        /// <returns>Una respuesta que indica el resultado de la operación.</returns>
-        public async Task<Respuesta<string>> EliminarClienteAsync(int idCliente)
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <returns>Respuesta con el resultado de la eliminacion.</returns>
+        public async Task<Respuesta<string>> EliminarAsync(string identificacion)
         {
-            ClienteEntidad clienteExistente = await iClienteRepositorio.ObtenerPorIdAsync(idCliente);
-            if (clienteExistente == null)
+            // Validar que la identificacion no sea nula o vacia
+            if (string.IsNullOrEmpty(identificacion))
+            {
+                return Respuesta<string>.CrearRespuestaFallida(400, "La identificacion es obligatoria.");
+            }
+
+            // Verificar si el cliente existe
+            var cliente = await _clienteRepositorio.ObtenerPorIdentificacionAsync(identificacion);
+            if (cliente == null)
             {
                 return Respuesta<string>.CrearRespuestaFallida(404, "Cliente no encontrado.");
             }
 
-            try
-            {
-                await iClienteRepositorio.EliminarAsync(idCliente);
-                return Respuesta<string>.CrearRespuestaExitosa("Cliente eliminado exitosamente.");
-            }
-            catch (Exception ex)
-            {
-                return Respuesta<string>.CrearRespuestaFallida(500, $"Error al eliminar el cliente: {ex.Message}");
-            }
+            // Eliminar el cliente
+            await _clienteRepositorio.EliminarAsync(identificacion);
+            return Respuesta<string>.CrearRespuestaExitosa("Cliente eliminado exitosamente.");
         }
     }
 }

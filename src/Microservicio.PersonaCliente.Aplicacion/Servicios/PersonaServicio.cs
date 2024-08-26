@@ -1,143 +1,154 @@
-﻿using Microservicio.PersonaCliente.Dominio.Entidades;
+﻿using Microservicio.PersonaCliente.Dominio.Dto;
 using Microservicio.PersonaCliente.Infraestructura.Repositorios;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 
 namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 {
     /// <summary>
-    /// Contructor de la Clase
+    /// Servicio para la gestion de Personas.
     /// </summary>
-    /// <param name="personaRepositorio">Interfaz del Repositorio de Persona</param>
-    public class PersonaServicio(IPersonaRepositorio iPersonaRepositorio) : IPersonaServicio
+    /// <remarks>
+    /// Constructor del servicio de personas.
+    /// </remarks>
+    /// <param name="personaRepositorio">Interfaz para el repositorio de la entidad Persona.</param>
+    public class PersonaServicio(IPersonaRepositorio personaRepositorio) : IPersonaServicio
     {
         /// <summary>
-        /// Interfaz del Repositorio de Persona
+        /// Interfaz para el repositorio de la entidad Persona.
         /// </summary>
-        private readonly IPersonaRepositorio iPersonaRepositorio = iPersonaRepositorio;
+        private readonly IPersonaRepositorio _personaRepositorio = personaRepositorio;
 
         /// <summary>
-        /// Obtener toda la lista de Personas
+        /// Obtiene toda la lista de personas en formato DTO.
         /// </summary>
-        /// <returns>Listado con todas las personas registradas</returns>
-        public async Task<Respuesta<IEnumerable<PersonaEntidad>>> ObtenerPersonasAsync()
+        /// <returns>Respuesta con la lista de personas.</returns>
+        public async Task<Respuesta<IEnumerable<PersonaDto>>> ObtenerTodasAsync()
         {
-            IEnumerable<PersonaEntidad> personas = await iPersonaRepositorio.ObtenerTodasAsync();
-            return Respuesta<IEnumerable<PersonaEntidad>>.CrearRespuestaExitosa(personas);
+            var personas = await _personaRepositorio.ObtenerTodasAsync();
+            if (!personas.Any())
+            {
+                return Respuesta<IEnumerable<PersonaDto>>.CrearRespuestaFallida(404, "No se encontraron personas registradas.");
+            }
+
+            return Respuesta<IEnumerable<PersonaDto>>.CrearRespuestaExitosa(personas);
         }
 
         /// <summary>
-        /// Obtener la Persona por la Identificacion
+        /// Obtiene una persona por su identificacion en formato DTO.
         /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        /// <returns>Informacion de la Persona consultada</returns>
-        public async Task<Respuesta<PersonaEntidad>> ObtenerPersonaAsync(string identificacion)
-        {
-            PersonaEntidad persona = await iPersonaRepositorio.ObtenerPorIdentificacionAsync(identificacion);
-            if (persona == null)
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(404, "La persona no fue encontrada.");
-            }
-
-            return Respuesta<PersonaEntidad>.CrearRespuestaExitosa(persona);
-        }
-
-        /// <summary>
-        /// Crear una persona nueva
-        /// </summary>
-        /// <param name="personaEntidad">Entidad Persona</param>
-        public async Task<Respuesta<PersonaEntidad>> CrearPersonaAsync(PersonaEntidad personaEntidad)
-        {
-            if (personaEntidad == null || string.IsNullOrEmpty(personaEntidad.Identificacion) || string.IsNullOrEmpty(personaEntidad.Nombre))
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(400, "Los campos 'Identificación' y 'Nombre' son obligatorios.");
-            }
-
-            PersonaEntidad personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacionAsync(personaEntidad.Identificacion);
-            if (personaExistente != null)
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(409, "La identificación ya existe en la base de datos.");
-            }
-
-            try
-            {
-                await iPersonaRepositorio.NuevoAsync(personaEntidad);
-                return Respuesta<PersonaEntidad>.CrearRespuestaExitosa(personaEntidad);
-            }
-            catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2627)
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(2627, "La identificación ya existe en la base de datos.");
-            }
-            catch (Exception ex)
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(500, $"Error inesperado: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Actualizar los datos de una persona
-        /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        /// <param name="personaEntidad">Entidad Persona</param>
-        public async Task<Respuesta<PersonaEntidad>> ActualizarPersonaAsync(string identificacion, PersonaEntidad personaEntidad)
-        {
-            if (!identificacion.Equals(personaEntidad.Identificacion))
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(400, "La identificación proporcionada no coincide con la de la entidad.");
-            }
-
-            PersonaEntidad personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacionAsync(identificacion);
-            if (personaExistente == null)
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(404, "La persona no fue encontrada.");
-            }
-
-            try
-            {
-                await iPersonaRepositorio.ModificarAsync(personaEntidad);
-                return Respuesta<PersonaEntidad>.CrearRespuestaExitosa(personaEntidad);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(409, "La operación no se pudo completar porque los datos fueron modificados o eliminados por otro proceso.");
-            }
-            catch (Exception ex)
-            {
-                return Respuesta<PersonaEntidad>.CrearRespuestaFallida(500, $"Error al actualizar la persona: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Eliminar una persona por la identificacion
-        /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        public async Task<Respuesta<string>> EliminarPersonaAsync(string identificacion)
+        /// <param name="identificacion">Identificacion de la persona.</param>
+        /// <returns>Respuesta con la persona encontrada.</returns>
+        public async Task<Respuesta<PersonaDto>> ObtenerPorIdentificacionAsync(string identificacion)
         {
             if (string.IsNullOrEmpty(identificacion))
             {
-                return Respuesta<string>.CrearRespuestaFallida(400, "La identificación no puede estar vacía.");
+                return Respuesta<PersonaDto>.CrearRespuestaFallida(400, "La identificacion no puede estar vacia.");
             }
 
-            PersonaEntidad personaExistente = await iPersonaRepositorio.ObtenerPorIdentificacionAsync(identificacion);
+            var persona = await _personaRepositorio.ObtenerPorIdentificacionAsync(identificacion);
+            if (persona == null)
+            {
+                return Respuesta<PersonaDto>.CrearRespuestaFallida(404, "Persona no encontrada.");
+            }
+
+            return Respuesta<PersonaDto>.CrearRespuestaExitosa(persona);
+        }
+
+        /// <summary>
+        /// Crea una nueva persona.
+        /// </summary>
+        /// <param name="personaDto">DTO de la persona a crear.</param>
+        /// <returns>Respuesta con la persona creada.</returns>
+        public async Task<Respuesta<PersonaDto>> CrearAsync(PersonaDto personaDto)
+        {
+            // Validar que los campos obligatorios esten completos
+            if (string.IsNullOrEmpty(personaDto.Identificacion) || string.IsNullOrEmpty(personaDto.Nombre))
+            {
+                return Respuesta<PersonaDto>.CrearRespuestaFallida(400, "Los campos 'Identificacion' y 'Nombre' son obligatorios.");
+            }
+
+            // Verificar si ya existe una persona con la misma identificacion
+            var personaExistente = await _personaRepositorio.ObtenerPorIdentificacionAsync(personaDto.Identificacion);
+            if (personaExistente != null)
+            {
+                return Respuesta<PersonaDto>.CrearRespuestaFallida(409, "Ya existe una persona con la misma identificacion.");
+            }
+
+            PersonaDto personaRespuestaDto = await _personaRepositorio.NuevoAsync(personaDto);
+            return Respuesta<PersonaDto>.CrearRespuestaExitosa(personaRespuestaDto);
+        }
+
+        /// <summary>
+        /// Actualiza una persona existente.
+        /// </summary>
+        /// <param name="identificacion">Identificacion de la persona a modificar.</param>
+        /// <param name="personaDto">DTO de la persona a actualizar.</param>
+        /// <returns>Respuesta con la persona actualizada.</returns>
+        public async Task<Respuesta<PersonaDto>> ModificarAsync(string identificacion, PersonaDto personaDto)
+        {
+            // Validar que los campos obligatorios esten completos
+            if (string.IsNullOrEmpty(personaDto.Identificacion) || personaDto.IdPersona <= 0)
+            {
+                return Respuesta<PersonaDto>.CrearRespuestaFallida(400, "Los campos 'Identificacion' y 'IdPersona' son obligatorios.");
+            }
+
+            if (identificacion != personaDto.Identificacion)
+            {
+                return Respuesta<PersonaDto>.CrearRespuestaFallida(400, "La identificacion proporcionada no coincide con la de la entidad.");
+            }
+
+            // Verificar si la persona existe antes de intentar modificarla
+            var personaExistente = await _personaRepositorio.ObtenerPorIdentificacionAsync(personaDto.Identificacion);
             if (personaExistente == null)
             {
-                return Respuesta<string>.CrearRespuestaFallida(404, $"No se encontró ninguna persona con la identificación {identificacion}.");
+                return Respuesta<PersonaDto>.CrearRespuestaFallida(404, "Persona no encontrada.");
             }
 
-            try
+            // Permitir la modificacion solo de los campos Edad, Genero, Direccion y Telefono
+            personaExistente.Edad = personaDto.Edad;
+            personaExistente.Genero = personaDto.Genero;
+            personaExistente.Direccion = personaDto.Direccion;
+            personaExistente.Telefono = personaDto.Telefono;
+
+            await _personaRepositorio.ModificarAsync(personaExistente);
+
+            // Crear DTO actualizado para la respuesta
+            var personaActualizadaDto = new PersonaDto
             {
-                await iPersonaRepositorio.EliminarAsync(identificacion);
-                return Respuesta<string>.CrearRespuestaExitosa($"La persona con identificación {identificacion} ha sido eliminada.");
-            }
-            catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 547)
+                IdPersona = personaExistente.IdPersona,
+                Nombre = personaExistente.Nombre,
+                Genero = personaExistente.Genero,
+                Edad = personaExistente.Edad,
+                Identificacion = personaExistente.Identificacion,
+                Direccion = personaExistente.Direccion,
+                Telefono = personaExistente.Telefono
+            };
+
+            return Respuesta<PersonaDto>.CrearRespuestaExitosa(personaActualizadaDto);
+        }
+
+
+        /// <summary>
+        /// Elimina una persona por su identificacion.
+        /// </summary>
+        /// <param name="identificacion">Identificacion de la persona a eliminar.</param>
+        /// <returns>Respuesta con el resultado de la eliminacion.</returns>
+        public async Task<Respuesta<string>> EliminarAsync(string identificacion)
+        {
+            if (string.IsNullOrEmpty(identificacion))
             {
-                return Respuesta<string>.CrearRespuestaFallida(409, "No se puede eliminar la persona porque está relacionada con otros registros.");
+                return Respuesta<string>.CrearRespuestaFallida(400, "La identificacion no puede estar vacia.");
             }
-            catch (Exception ex)
+
+            // Verificar si la persona existe antes de intentar eliminarla
+            var personaExistente = await _personaRepositorio.ObtenerPorIdentificacionAsync(identificacion);
+            if (personaExistente == null)
             {
-                return Respuesta<string>.CrearRespuestaFallida(500, $"Error al eliminar la persona: {ex.Message}");
+                return Respuesta<string>.CrearRespuestaFallida(404, "Persona no encontrada.");
             }
+
+            await _personaRepositorio.EliminarAsync(identificacion);
+            return Respuesta<string>.CrearRespuestaExitosa("Persona eliminada exitosamente.");
         }
     }
 }

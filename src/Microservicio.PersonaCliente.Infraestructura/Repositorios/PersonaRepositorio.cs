@@ -1,80 +1,129 @@
-﻿using Microservicio.PersonaCliente.Dominio.Entidades;
+﻿using Microservicio.PersonaCliente.Dominio.Dto;
+using Microservicio.PersonaCliente.Dominio.Entidades;
 using Microservicio.PersonaCliente.Infraestructura.Persistencia;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microservicio.PersonaCliente.Infraestructura.Repositorios
 {
     /// <summary>
-    /// Repositorio Persona
+    /// Repositorio de la entidad Persona, implementa las operaciones CRUD.
     /// </summary>
-    /// <param name="ejercicioTecnicoDBContext">Clase Context de la Base de Datos</param>
-    public class PersonaRepositorio(EjercicioTecnicoDBContext ejercicioTecnicoDBContext) : IPersonaRepositorio
+    /// <remarks>
+    /// Inicializa una nueva instancia del repositorio de Persona con el contexto de base de datos proporcionado.
+    /// </remarks>
+    /// <param name="dbContext">Contexto de base de datos.</param>
+    public class PersonaRepositorio(EjercicioTecnicoDBContext dbContext) : IPersonaRepositorio
     {
         /// <summary>
-        /// Clase Context de la Base de Datos
+        /// Contexto de base de datos.
         /// </summary>
-        private readonly EjercicioTecnicoDBContext ejercicioTecnicoDBContext = ejercicioTecnicoDBContext;
+        private readonly EjercicioTecnicoDBContext _dbContext = dbContext;
 
         /// <summary>
-        /// Obtener toda la lista de Personas
+        /// Obtiene todas las personas registradas en la base de datos.
         /// </summary>
-        /// <returns>Listado con todas las personas registradas</returns>
-        public async Task<IEnumerable<PersonaEntidad>> ObtenerTodasAsync()
+        /// <returns>Una lista con todas las personas registradas en formato DTO.</returns>
+        public async Task<IEnumerable<PersonaDto>> ObtenerTodasAsync()
         {
-            return await ejercicioTecnicoDBContext.Persona.ToListAsync();
-        }
-
-        /// <summary>
-        /// Obtener la Persona por la Identificacion
-        /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        /// <returns>Informacion de la Persona consultada</returns>
-        public async Task<PersonaEntidad> ObtenerPorIdentificacionAsync(string identificacion)
-        {
-            return await ejercicioTecnicoDBContext.Persona.FirstOrDefaultAsync(filtro => filtro.Identificacion == identificacion);
-        }
-
-        /// <summary>
-        /// Crear una persona nueva
-        /// </summary>
-        /// <param name="personaEntidad">Entidad Persona</param>
-        public async Task NuevoAsync(PersonaEntidad personaEntidad)
-        {
-            ejercicioTecnicoDBContext.Persona.Add(personaEntidad);
-            await ejercicioTecnicoDBContext.SaveChangesAsync();
-        }
-
-        /// <summary>
-        /// Actualizar los datos de una persona
-        /// </summary>
-        /// <param name="personaEntidad">Entidad Persona</param>
-        public async Task ModificarAsync(PersonaEntidad personaEntidad)
-        {
-            PersonaEntidad? persona = await ejercicioTecnicoDBContext.Persona.FirstOrDefaultAsync(p => p.IdPersona == personaEntidad.IdPersona);
-
-            if (persona is not null)
+            var personas = await _dbContext.Personas.ToListAsync();
+            return personas.Select(p => new PersonaDto
             {
-                persona.Nombre = personaEntidad.Nombre;
-                persona.Genero = personaEntidad.Genero;
-                persona.Edad = personaEntidad.Edad;
-                persona.Direccion = personaEntidad.Direccion;
-                persona.Telefono = personaEntidad.Telefono;
+                IdPersona = p.IdPersona,
+                Nombre = p.Nombre,
+                Genero = p.Genero,
+                Edad = p.Edad,
+                Identificacion = p.Identificacion,
+                Direccion = p.Direccion,
+                Telefono = p.Telefono
+            }).ToList();
+        }
 
-                await ejercicioTecnicoDBContext.SaveChangesAsync();
+        /// <summary>
+        /// Obtiene una persona por su identificacion.
+        /// </summary>
+        /// <param name="identificacion">Identificacion de la persona a buscar.</param>
+        /// <returns>La persona encontrada en formato DTO o null si no existe.</returns>
+        public async Task<PersonaDto> ObtenerPorIdentificacionAsync(string identificacion)
+        {
+            var persona = await _dbContext.Personas.FirstOrDefaultAsync(f => f.Identificacion == identificacion);
+            if (persona == null) return null;
+
+            return new PersonaDto
+            {
+                IdPersona = persona.IdPersona,
+                Nombre = persona.Nombre,
+                Genero = persona.Genero,
+                Edad = persona.Edad,
+                Identificacion = persona.Identificacion,
+                Direccion = persona.Direccion,
+                Telefono = persona.Telefono
+            };
+        }
+
+        /// <summary>
+        /// Crea una nueva persona en la base de datos y retorna el registro creado.
+        /// </summary>
+        /// <param name="personaDto">DTO de la persona que se va a crear.</param>
+        /// <returns>PersonaDto con la informacion de la persona creada.</returns>
+        public async Task<PersonaDto> NuevoAsync(PersonaDto personaDto)
+        {
+            var personaEntidad = new PersonaEntidad
+            {
+                Nombre = personaDto.Nombre,
+                Genero = personaDto.Genero,
+                Edad = personaDto.Edad,
+                Identificacion = personaDto.Identificacion,
+                Direccion = personaDto.Direccion,
+                Telefono = personaDto.Telefono
+            };
+
+            _dbContext.Personas.Add(personaEntidad);
+            await _dbContext.SaveChangesAsync();
+
+            return new PersonaDto
+            {
+                IdPersona = personaEntidad.IdPersona,
+                Nombre = personaEntidad.Nombre,
+                Genero = personaEntidad.Genero,
+                Edad = personaEntidad.Edad,
+                Identificacion = personaEntidad.Identificacion,
+                Direccion = personaEntidad.Direccion,
+                Telefono = personaEntidad.Telefono
+            };
+        }
+
+
+        /// <summary>
+        /// Modifica los datos de una persona existente en la base de datos.
+        /// </summary>
+        /// <param name="personaDto">DTO de la persona con los datos actualizados.</param>
+        public async Task ModificarAsync(PersonaDto personaDto)
+        {
+            var persona = await _dbContext.Personas.FirstOrDefaultAsync(p => p.IdPersona == personaDto.IdPersona);
+
+            if (persona != null)
+            {
+                persona.Nombre = personaDto.Nombre;
+                persona.Genero = personaDto.Genero;
+                persona.Edad = personaDto.Edad;
+                persona.Direccion = personaDto.Direccion;
+                persona.Telefono = personaDto.Telefono;
+
+                await _dbContext.SaveChangesAsync();
             }
         }
 
         /// <summary>
-        /// Eliminar una persona por la identificacion
+        /// Elimina una persona de la base de datos por su identificacion.
         /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
+        /// <param name="identificacion">Identificacion de la persona que se va a eliminar.</param>
         public async Task EliminarAsync(string identificacion)
         {
-            PersonaEntidad? persona = await ejercicioTecnicoDBContext.Persona.FirstOrDefaultAsync(filtro => filtro.Identificacion == identificacion);
-            if (persona is not null)
+            var persona = await _dbContext.Personas.FirstOrDefaultAsync(f => f.Identificacion == identificacion);
+            if (persona != null)
             {
-                ejercicioTecnicoDBContext.Persona.Remove(persona);
-                await ejercicioTecnicoDBContext.SaveChangesAsync();
+                _dbContext.Personas.Remove(persona);
+                await _dbContext.SaveChangesAsync();
             }
         }
     }

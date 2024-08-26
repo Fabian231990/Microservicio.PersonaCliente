@@ -39,7 +39,7 @@ namespace Microservicio.PersonaCliente.Tests.Test
             Assert.Throws<ArgumentException>(() => new ClienteEntidad
             {
                 IdPersona = idPersona,
-                Contrasenia = string.Empty, // Esta contraseña debería causar una excepción
+                Contrasenia = string.Empty, // Esta contrasenia deberia causar una excepcion
                 Estado = true
             });
         }

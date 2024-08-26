@@ -44,7 +44,7 @@ namespace Microservicio.PersonaCliente.Tests.Test
             // Arrange
             var persona = new PersonaEntidad();
 
-            // Act & Assert: Validamos que establecer una edad negativa genera una excepción
+            // Act & Assert: Validamos que establecer una edad negativa genera una excepcion
             Assert.Throws<ArgumentOutOfRangeException>(() => persona.Edad = -1);
         }
 
@@ -54,7 +54,7 @@ namespace Microservicio.PersonaCliente.Tests.Test
             // Arrange
             var persona = new PersonaEntidad();
 
-            // Act & Assert: Validamos que establecer una identificación con longitud incorrecta genera una excepción
+            // Act & Assert: Validamos que establecer una identificacion con longitud incorrecta genera una excepcion
             Assert.Throws<ArgumentException>(() => persona.Identificacion = "123");
         }
     }

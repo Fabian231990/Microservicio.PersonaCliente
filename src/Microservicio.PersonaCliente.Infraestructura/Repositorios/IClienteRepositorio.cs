@@ -1,48 +1,40 @@
-﻿using Microservicio.PersonaCliente.Dominio.Entidades;
+﻿using Microservicio.PersonaCliente.Dominio.Dto;
 
 namespace Microservicio.PersonaCliente.Infraestructura.Repositorios
 {
-    /// <summary>
-    /// Interfaz para el repositorio de Cliente, que define las operaciones CRUD.
-    /// </summary>
     public interface IClienteRepositorio
     {
         /// <summary>
-        /// Obtiene todos los clientes.
+        /// Obtiene todos los clientes registrados en la base de datos en formato DTO.
         /// </summary>
-        /// <returns>Una colección enumerable de objetos ClienteEntidad.</returns>
-        Task<IEnumerable<ClienteEntidad>> ObtenerTodosAsync();
+        /// <returns>Una lista con todos los clientes registrados en formato DTO.</returns>
+        Task<IEnumerable<ClienteDto>> ObtenerTodosAsync();
 
         /// <summary>
-        /// Obtiene un cliente por su ID.
+        /// Obtiene un cliente por la identificacion de la persona asociada.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a buscar.</param>
-        /// <returns>Un objeto ClienteEntidad si se encuentra; de lo contrario, null.</returns>
-        Task<ClienteEntidad> ObtenerPorIdAsync(int idCliente);
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <returns>El cliente en formato DTO o null si no existe.</returns>
+        Task<ClienteDto> ObtenerPorIdentificacionAsync(string identificacion);
 
         /// <summary>
-        /// Obtiene un cliente basado en el ID de la persona asociada.
+        /// Crea un nuevo cliente en la base de datos y retorna el registro creado.
         /// </summary>
-        /// <param name="idPersona">El ID de la persona que se está buscando.</param>
-        /// <returns>Un objeto ClienteEntidad si se encuentra un cliente asociado a la persona; de lo contrario, null.</returns>
-        Task<ClienteEntidad> ObtenerPorIdPersona(int idPersona);
+        /// <param name="clienteDto">DTO del cliente que se va a crear.</param>
+        /// <returns>ClienteDto con la informacion del cliente creado.</returns>
+        Task<ClienteDto> NuevoAsync(ClienteDto clienteDto);
 
         /// <summary>
-        /// Agrega un nuevo cliente.
+        /// Modifica los datos de un cliente existente en la base de datos y retorna el cliente actualizado.
         /// </summary>
-        /// <param name="clienteEntidad">El objeto ClienteEntidad que se va a agregar.</param>
-        Task NuevoAsync(ClienteEntidad clienteEntidad);
+        /// <param name="clienteDto">DTO del cliente con los datos actualizados.</param>
+        /// <returns>ClienteDto con la informacion del cliente actualizado.</returns>
+        Task<ClienteDto> ModificarAsync(ClienteDto clienteDto);
 
         /// <summary>
-        /// Modifica un cliente existente.
+        /// Elimina un cliente de la base de datos por la identificacion de la persona asociada.
         /// </summary>
-        /// <param name="clienteEntidad">El objeto ClienteEntidad con los nuevos datos.</param>
-        Task ModificarAsync(ClienteEntidad clienteEntidad);
-
-        /// <summary>
-        /// Elimina un cliente por su ID.
-        /// </summary>
-        /// <param name="idCliente">El ID del cliente a eliminar.</param>
-        Task EliminarAsync(int idCliente);
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        Task EliminarAsync(string identificacion);
     }
 }

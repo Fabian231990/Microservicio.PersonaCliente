@@ -1,46 +1,46 @@
-﻿using Microservicio.PersonaCliente.Dominio.Entidades;
+﻿using Microservicio.PersonaCliente.Dominio.Dto;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
 
 namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 {
     /// <summary>
-    /// Interfaz para el servicio de Cliente, que define las operaciones de negocio para la entidad Cliente.
+    /// Interfaz para el servicio de clientes, define las operaciones para la gestion de clientes.
     /// </summary>
     public interface IClienteServicio
     {
         /// <summary>
-        /// Obtiene todos los clientes registrados.
+        /// Obtiene toda la lista de clientes en formato DTO.
         /// </summary>
-        /// <returns>Una respuesta con una colección enumerable de objetos ClienteEntidad.</returns>
-        Task<Respuesta<IEnumerable<ClienteEntidad>>> ObtenerClientesAsync();
+        /// <returns>Respuesta con la lista de clientes.</returns>
+        Task<Respuesta<IEnumerable<ClienteDto>>> ObtenerTodosAsync();
 
         /// <summary>
-        /// Obtiene un cliente específico por su ID.
+        /// Obtiene un cliente por la identificacion de la persona asociada.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a buscar.</param>
-        /// <returns>Una respuesta con el objeto ClienteEntidad correspondiente al ID proporcionado.</returns>
-        Task<Respuesta<ClienteEntidad>> ObtenerClientePorIdAsync(int idCliente);
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <returns>Respuesta con el cliente encontrado.</returns>
+        Task<Respuesta<ClienteDto>> ObtenerPorIdentificacionAsync(string identificacion);
 
         /// <summary>
         /// Crea un nuevo cliente.
         /// </summary>
-        /// <param name="clienteEntidad">El objeto ClienteEntidad que se va a crear.</param>
-        /// <returns>Una respuesta con el objeto ClienteEntidad creado.</returns>
-        Task<Respuesta<ClienteEntidad>> CrearClienteAsync(ClienteEntidad clienteEntidad);
+        /// <param name="clienteDto">DTO del cliente a crear.</param>
+        /// <returns>Respuesta con el cliente creado.</returns>
+        Task<Respuesta<ClienteDto>> CrearAsync(ClienteDto clienteDto);
 
         /// <summary>
-        /// Actualiza los datos de un cliente existente.
+        /// Modifica los datos de un cliente existente.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a actualizar.</param>
-        /// <param name="clienteEntidad">El objeto ClienteEntidad con los datos actualizados.</param>
-        /// <returns>Una respuesta con el objeto ClienteEntidad actualizado.</returns>
-        Task<Respuesta<ClienteEntidad>> ActualizarClienteAsync(int idCliente, ClienteEntidad clienteEntidad);
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <param name="clienteDto">DTO del cliente a modificar.</param>
+        /// <returns>Respuesta con el cliente modificado.</returns>
+        Task<Respuesta<ClienteDto>> ModificarAsync(string identificacion, ClienteDto clienteDto);
 
         /// <summary>
-        /// Elimina un cliente por su ID.
+        /// Elimina un cliente por su identificacion.
         /// </summary>
-        /// <param name="idCliente">El ID del cliente a eliminar.</param>
-        /// <returns>Una respuesta que indica el resultado de la operación.</returns>
-        Task<Respuesta<string>> EliminarClienteAsync(int idCliente);
+        /// <param name="identificacion">Identificacion de la persona asociada al cliente.</param>
+        /// <returns>Respuesta con el resultado de la eliminacion.</returns>
+        Task<Respuesta<string>> EliminarAsync(string identificacion);
     }
 }

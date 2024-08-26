@@ -1,98 +1,88 @@
 ﻿using Microservicio.PersonaCliente.Aplicacion.Servicios;
-using Microservicio.PersonaCliente.Dominio.Entidades;
+using Microservicio.PersonaCliente.Dominio.Dto;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Microservicio.PersonaCliente.API.Controllers
 {
     /// <summary>
-    /// Controlador que maneja las operaciones CRUD para la entidad Persona.
+    /// Controlador que maneja las operaciones relacionadas con las personas.
     /// </summary>
-    /// <param name="iPersonaServicio">Servicio que maneja la lógica de negocio para Persona.</param>
+    /// <remarks>
+    /// Constructor del controlador Persona.
+    /// </remarks>
+    /// <param name="personaServicio">Servicio de personas que maneja la logica de negocio.</param>
     [ApiController]
     [Route("[controller]")]
-    public class PersonasController(IPersonaServicio iPersonaServicio) : ControllerBase
+    public class PersonasController(IPersonaServicio personaServicio) : ControllerBase
     {
         /// <summary>
-        /// Servicio que maneja la lógica de negocio para Persona.
+        /// Servicio de personas que maneja la logica de negocio.
         /// </summary>
-        private readonly IPersonaServicio iPersonaServicio = iPersonaServicio;
+        private readonly IPersonaServicio _personaServicio = personaServicio;
 
         /// <summary>
-        /// Obtener toda la lista de Personas
+        /// Obtiene todas las personas registradas.
         /// </summary>
-        /// <returns>Listado con todas las personas registradas</returns>
+        /// <returns>Lista de personas.</returns>
         [HttpGet]
-        public async Task<ActionResult<Respuesta<IEnumerable<PersonaEntidad>>>> ObtenerPersonas()
+        public async Task<ActionResult<Respuesta<IEnumerable<PersonaDto>>>> ObtenerPersonas()
         {
-            Respuesta<IEnumerable<PersonaEntidad>> resultado = await iPersonaServicio.ObtenerPersonasAsync();
-            return Ok(resultado);
+            var respuesta = await _personaServicio.ObtenerTodasAsync();
+            return Ok(respuesta);
         }
 
         /// <summary>
-        /// Obtener la Persona por la Identificacion
+        /// Obtiene una persona por su identificacion.
         /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        /// <returns>Informacion de la Persona consultada</returns>
+        /// <param name="identificacion">Identificacion de la persona a buscar.</param>
+        /// <returns>Informacion de la persona encontrada.</returns>
         [HttpGet("{identificacion}")]
-        public async Task<ActionResult<Respuesta<PersonaEntidad>>> ObtenerPersona(string identificacion)
+        public async Task<ActionResult<Respuesta<PersonaDto>>> ObtenerPersona(string identificacion)
         {
-            Respuesta<PersonaEntidad> resultado = await iPersonaServicio.ObtenerPersonaAsync(identificacion);
-            if (!resultado.EsExitoso)
+            var respuesta = await _personaServicio.ObtenerPorIdentificacionAsync(identificacion);
+            if (!respuesta.EsExitoso)
             {
-                return StatusCode(resultado.Codigo, resultado);
+                return NotFound(respuesta);
             }
-
-            return Ok(resultado);
+            return Ok(respuesta);
         }
 
         /// <summary>
-        /// Crear una persona nueva
+        /// Crea una nueva persona.
         /// </summary>
-        /// <param name="personaEntidad">Entidad Persona</param>
+        /// <param name="personaDto">Datos de la persona a crear.</param>
+        /// <returns>Respuesta con la persona creada.</returns>
         [HttpPost]
-        public async Task<ActionResult<Respuesta<PersonaEntidad>>> CrearPersona(PersonaEntidad personaEntidad)
+        public async Task<ActionResult<Respuesta<PersonaDto>>> CrearPersona(PersonaDto personaDto)
         {
-            Respuesta<PersonaEntidad> resultado = await iPersonaServicio.CrearPersonaAsync(personaEntidad);
-            if (!resultado.EsExitoso)
-            {
-                return StatusCode(resultado.Codigo, resultado);
-            }
-
-            return CreatedAtAction(nameof(ObtenerPersona), new { identificacion = personaEntidad.Identificacion }, resultado);
+            var respuesta = await _personaServicio.CrearAsync(personaDto);
+            return Ok(respuesta);
         }
 
         /// <summary>
-        /// Actualizar los datos de una persona
+        /// Modifica los datos de una persona existente.
         /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
-        /// <param name="personaEntidad">Entidad Persona</param>
+        /// <param name="identificacion">Identificacion de la persona a modificar.</param>
+        /// <param name="personaDto">Datos actualizados de la persona.</param>
+        /// <returns>Respuesta con la persona modificada.</returns>
         [HttpPut("{identificacion}")]
-        public async Task<ActionResult<Respuesta<PersonaEntidad>>> ActualizarPersona(string identificacion, PersonaEntidad personaEntidad)
+        public async Task<IActionResult> ModificarPersona(string identificacion, PersonaDto personaDto)
         {
-            Respuesta<PersonaEntidad> resultado = await iPersonaServicio.ActualizarPersonaAsync(identificacion, personaEntidad);
-            if (!resultado.EsExitoso)
-            {
-                return StatusCode(resultado.Codigo, resultado);
-            }
-
-            return Ok(resultado);
+            var respuesta = await _personaServicio.ModificarAsync(identificacion, personaDto);
+            return Ok(respuesta);
         }
 
         /// <summary>
-        /// Eliminar una persona por la identificacion
+        /// Elimina una persona por su identificacion.
         /// </summary>
-        /// <param name="identificacion">Identificacion de la Persona</param>
+        /// <param name="identificacion">Identificacion de la persona a eliminar.</param>
+        /// <returns>Respuesta con el resultado de la eliminacion.</returns>
         [HttpDelete("{identificacion}")]
-        public async Task<ActionResult<Respuesta<string>>> EliminarPersona(string identificacion)
+        public async Task<IActionResult> EliminarPersona(string identificacion)
         {
-            Respuesta<string> resultado = await iPersonaServicio.EliminarPersonaAsync(identificacion);
-            if (!resultado.EsExitoso)
-            {
-                return StatusCode(resultado.Codigo, resultado);
-            }
-
-            return Ok(resultado);
+            var respuesta = await _personaServicio.EliminarAsync(identificacion);
+            return Ok(respuesta);
         }
     }
 }
