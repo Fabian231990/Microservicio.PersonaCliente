@@ -1,6 +1,5 @@
-﻿using Microservicio.PersonaCliente.Aplicacion.Interfaces;
-using Microservicio.PersonaCliente.Dominio.Entidades;
-using Microservicio.PersonaCliente.Infraestructura.Interfaces;
+﻿using Microservicio.PersonaCliente.Dominio.Entidades;
+using Microservicio.PersonaCliente.Infraestructura.Repositorios;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

@@ -1,5 +1,4 @@
 ﻿using Microservicio.PersonaCliente.Dominio.Entidades;
-using Microservicio.PersonaCliente.Infraestructura.Interfaces;
 using Microservicio.PersonaCliente.Infraestructura.Persistencia;
 using Microsoft.EntityFrameworkCore;
 

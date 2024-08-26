@@ -1,6 +1,4 @@
-using Microservicio.PersonaCliente.Aplicacion.Interfaces;
 using Microservicio.PersonaCliente.Aplicacion.Servicios;
-using Microservicio.PersonaCliente.Infraestructura.Interfaces;
 using Microservicio.PersonaCliente.Infraestructura.Persistencia;
 using Microservicio.PersonaCliente.Infraestructura.Repositorios;
 using Microsoft.EntityFrameworkCore;

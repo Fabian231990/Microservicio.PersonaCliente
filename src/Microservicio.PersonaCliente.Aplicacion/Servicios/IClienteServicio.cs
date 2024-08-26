@@ -1,7 +1,7 @@
 ﻿using Microservicio.PersonaCliente.Dominio.Entidades;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
 
-namespace Microservicio.PersonaCliente.Aplicacion.Interfaces
+namespace Microservicio.PersonaCliente.Aplicacion.Servicios
 {
     /// <summary>
     /// Interfaz para el servicio de Cliente, que define las operaciones de negocio para la entidad Cliente.

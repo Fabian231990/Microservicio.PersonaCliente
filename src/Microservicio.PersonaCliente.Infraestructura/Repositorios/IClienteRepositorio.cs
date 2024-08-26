@@ -1,6 +1,6 @@
 ﻿using Microservicio.PersonaCliente.Dominio.Entidades;
 
-namespace Microservicio.PersonaCliente.Infraestructura.Interfaces
+namespace Microservicio.PersonaCliente.Infraestructura.Repositorios
 {
     /// <summary>
     /// Interfaz para el repositorio de Cliente, que define las operaciones CRUD.

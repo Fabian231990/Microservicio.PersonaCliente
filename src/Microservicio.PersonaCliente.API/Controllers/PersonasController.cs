@@ -1,4 +1,4 @@
-﻿using Microservicio.PersonaCliente.Aplicacion.Interfaces;
+﻿using Microservicio.PersonaCliente.Aplicacion.Servicios;
 using Microservicio.PersonaCliente.Dominio.Entidades;
 using Microservicio.PersonaCliente.Infraestructura.Utilitarios;
 using Microsoft.AspNetCore.Mvc;
