@@ -35,7 +35,8 @@ namespace Microservicio.PersonaCliente.Infraestructura.Repositorios
                 IdPersona = c.IdPersona,
                 Identificacion = c.Persona.Identificacion,
                 Contrasenia = c.Contrasenia,
-                Estado = c.Estado
+                Estado = c.Estado,
+                Nombre = c.Persona.Nombre
             }).ToList();
         }
 
@@ -92,7 +93,8 @@ namespace Microservicio.PersonaCliente.Infraestructura.Repositorios
                 IdPersona = clienteEntidad.IdPersona,
                 Identificacion = clienteDto.Identificacion,
                 Contrasenia = clienteEntidad.Contrasenia,
-                Estado = clienteEntidad.Estado
+                Estado = clienteEntidad.Estado,
+                Nombre = clienteEntidad.Persona.Nombre
             };
         }
 
